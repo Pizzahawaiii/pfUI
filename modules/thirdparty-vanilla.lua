@@ -1056,11 +1056,11 @@ pfUI:RegisterModule("thirdparty-vanilla", "vanilla", function()
 
     local f = pfUI.uf.player
     DruidManaBar:SetWidth((f.config.pwidth ~= "-1" and f.config.pwidth or f.config.width))
-    DruidManaBar:SetHeight(f.config.pheight)
+    DruidManaBar:SetHeight(f.config.pheight / 2)
     DruidManaBar.text:SetFont(pfUI.font_unit, C.global.font_unit_size, "OUTLINE")
     DruidManaBar.text:SetFontObject(GameFontWhite)
 
-    CreateBackdrop(DruidManaBar)
+    CreateBackdrop(DruidManaBar, 0)
     CreateBackdropShadow(DruidManaBar)
 
     DruidManaBar:SetScript("OnMouseUp", function(button)
