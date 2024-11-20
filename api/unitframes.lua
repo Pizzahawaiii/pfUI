@@ -775,9 +775,12 @@ function pfUI.uf:UpdateConfig()
         af = "TOPRIGHT"
       end
 
+      local buffoffsetx = tonumber(f.config.buffoffsetx) or 0
+      local buffoffsety = tonumber(f.config.buffoffsety) or 0
+
       f.buffs[i]:SetPoint(af, f, f.config.buffs,
-      invert_v * (i-1-row*perrow)*(2*default_border + f.config.buffsize + 1),
-      invert_h * (row*(2*default_border + f.config.buffsize + 1) + (2*default_border + 1)))
+      invert_v * (i-1-row*perrow)*(2*default_border + f.config.buffsize + 1) + buffoffsetx,
+      invert_h * (row*(2*default_border + f.config.buffsize + 1) + (2*default_border + 1) + buffoffsety))
 
       f.buffs[i]:SetWidth(f.config.buffsize)
       f.buffs[i]:SetHeight(f.config.buffsize)
