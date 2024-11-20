@@ -194,6 +194,9 @@ pfUI:RegisterModule("buffwatch", "vanilla:tbc", function ()
     frame.time:SetFont(font, C.global.font_size)
     frame.time:SetTextColor(1,1,1,1)
     frame.time:SetJustifyH("RIGHT")
+    if parent.config.showtimer == "0" then
+      frame.time:Hide()
+    end
 
     frame.icon = frame:CreateTexture(nil, "OVERLAY")
     frame.icon:SetWidth(height)
