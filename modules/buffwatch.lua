@@ -158,6 +158,8 @@ pfUI:RegisterModule("buffwatch", "vanilla:tbc", function ()
     local textcolor = parent.textcolor
     local width = parent:GetWidth()
     local height = parent:GetHeight()
+    local vertical = parent.config.vertical == "1"
+    local reversegrow = parent.config.reversegrow == "1"
     local framename = "pf" .. parent.unit .. ( parent.type == "HARMFUL" and "Debuff" or "Buff" ) .. "Bar" .. bar
 
     local font = parent.config.use_unitfonts == "1" and pfUI.font_unit or pfUI.font_default
@@ -165,15 +167,33 @@ pfUI:RegisterModule("buffwatch", "vanilla:tbc", function ()
     local frame = _G[framename] or CreateFrame("Button", framename, parent)
     frame:EnableMouse(1)
     frame:Hide()
-    frame:SetPoint("BOTTOM", 0, (bar-1)*(height+2*border+1))
+    if vertical then
+      if reversegrow then
+        frame:SetPoint("RIGHT", -(bar-1)*(width+border), 0)
+      else
+        frame:SetPoint("LEFT", (bar-1)*(width+border), 0)
+      end
+    else
+      if reversegrow then
+        frame:SetPoint("TOP", 0, -(bar-1)*(height+border))
+      else
+        frame:SetPoint("BOTTOM", 0, (bar-1)*(height+border))
+      end
+    end
     frame:SetWidth(width)
     frame:SetHeight(height)
 
     frame.bar = CreateFrame("StatusBar", "pfBuffBar" .. bar, frame)
-    frame.bar:SetPoint("TOPLEFT", frame, "TOPLEFT", height+1, 0)
-    frame.bar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 0, 0)
+    if vertical then
+      frame.bar:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 0, width+1)
+      frame.bar:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 0, 0)
+    else
+      frame.bar:SetPoint("TOPLEFT", frame, "TOPLEFT", height+1, 0)
+      frame.bar:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 0, 0)
+    end
     frame.bar:SetStatusBarTexture(pfUI.media["img:bar"])
     frame.bar:SetStatusBarColor(color.r, color.g, color.b, color.a)
+    frame.bar:SetOrientation(vertical and "VERTICAL" or "HORIZONTAL")
 
     frame.text = frame.bar:CreateFontString("Status", "DIALOG", "GameFontNormal")
     frame.text:ClearAllPoints()
@@ -187,28 +207,36 @@ pfUI:RegisterModule("buffwatch", "vanilla:tbc", function ()
 
     frame.time = frame.bar:CreateFontString("Status", "DIALOG", "GameFontNormal")
     frame.time:ClearAllPoints()
-    frame.time:SetPoint("TOPLEFT", frame.bar, "TOPLEFT", 3, 0)
-    frame.time:SetPoint("BOTTOMRIGHT", frame.bar, "BOTTOMRIGHT", -3, 0)
+    if vertical then
+      frame.time:SetPoint("TOPLEFT", frame.bar, "TOPLEFT", 0, -3)
+      frame.time:SetPoint("BOTTOMRIGHT", frame.bar, "BOTTOMRIGHT", 0, 3)
+      frame.time:SetJustifyV("TOP")
+    else
+      frame.time:SetPoint("TOPLEFT", frame.bar, "TOPLEFT", 3, 0)
+      frame.time:SetPoint("BOTTOMRIGHT", frame.bar, "BOTTOMRIGHT", -3, 0)
+      frame.time:SetJustifyH("RIGHT")
+    end
     frame.time:SetNonSpaceWrap(false)
     frame.time:SetFontObject(GameFontWhite)
-    frame.time:SetFont(font, C.global.font_size)
+    frame.time:SetFont(font, C.global.font_size - 4)
     frame.time:SetTextColor(1,1,1,1)
-    frame.time:SetJustifyH("RIGHT")
     if parent.config.showtimer == "0" then
       frame.time:Hide()
     end
 
+    local iconSize = vertical and width or height
+    local iconAnchor = vertical and "BOTTOM" or "LEFT"
     frame.icon = frame:CreateTexture(nil, "OVERLAY")
-    frame.icon:SetWidth(height)
-    frame.icon:SetHeight(height)
-    frame.icon:SetPoint("LEFT", frame, "LEFT", 0, 0)
+    frame.icon:SetWidth(iconSize)
+    frame.icon:SetHeight(iconSize)
+    frame.icon:SetPoint(iconAnchor, frame, iconAnchor, 0, 0)
     frame.icon:SetTexCoord(.07,.93,.07,.93)
 
     frame.stacks = frame.bar:CreateFontString("Status", "DIALOG", "GameFontWhite")
-    frame.stacks:SetFont(font, C.global.font_size, "OUTLINE")
+    frame.stacks:SetFont(font, C.global.font_size - 4, "OUTLINE")
     frame.stacks:SetAllPoints(frame.icon)
-    frame.stacks:SetJustifyH("CENTER")
-    frame.stacks:SetJustifyV("CENTER")
+    frame.stacks:SetJustifyH("RIGHT")
+    frame.stacks:SetJustifyV("BOTTOM")
 
     frame.parent = parent
     frame:SetScript("OnUpdate", StatusBarOnUpdate)
