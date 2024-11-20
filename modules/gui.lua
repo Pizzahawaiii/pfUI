@@ -1753,6 +1753,7 @@ pfUI:RegisterModule("gui", "vanilla:tbc", function ()
         CreateConfig(U[c], T["Right Text X Offset"], C.unitframes[c], "txtpowerrightoffx")
         CreateConfig(U[c], T["Right Text Y Offset"], C.unitframes[c], "txtpowerrightoffy")
         CreateConfig(U[c], T["Power Bar Anchor"], C.unitframes[c], "panchor", "dropdown", pfUI.gui.dropdowns.uf_powerbar_position)
+        CreateConfig(U[c], T["Enable Vertical Power Bar"], C.unitframes[c], "verticalpowerbar", "checkbox")
 
         CreateConfig(U[c], T["Combat Text"], nil, nil, "header")
         CreateConfig(U[c], T["Show Combat Text"], C.unitframes[c], "hitindicator", "checkbox")

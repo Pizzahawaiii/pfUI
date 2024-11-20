@@ -396,7 +396,7 @@ function pfUI.uf:UpdateFrameSize()
   local ptwidth = self.config.portraitwidth
   local ptheight = self.config.portraitheight
 
-  local real_height = height + spacing + pheight + 2*default_border
+  local real_height = height + spacing + (self.config.verticalpowerbar and 0 or pheight) + 2*default_border
   if spacing ~= abs(spacing) and abs(spacing) > tonumber(pheight) then
     real_height = height
     spacing = 0
@@ -495,6 +495,11 @@ function pfUI.uf:UpdateConfig()
   pfUI.api.CreateBackdrop(f.power, default_border)
   f.power.bar:SetStatusBarTexture(pfUI.media[f.config.pbartexture])
   f.power.bar:SetAllPoints(f.power)
+  if f.config.verticalpowerbar == "1" then
+    f.power.bar:SetOrientation("VERTICAL")
+  else
+    f.power.bar:SetOrientation("HORIZONTAL")
+  end
 
   local custompbg = f.config.defcolor == "0" and f.config.custompbg or C.unitframes.custompbg
   local custompbgcolor = f.config.defcolor == "0" and f.config.custompbgcolor or C.unitframes.custompbgcolor
