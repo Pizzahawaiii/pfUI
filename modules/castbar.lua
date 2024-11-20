@@ -119,12 +119,21 @@ pfUI:RegisterModule("castbar", "vanilla:tbc", function ()
 
           -- set texture
           if texture and this.showicon then
-            local size = this:GetHeight()
+            local size = this.vertical and this:GetWidth() or this:GetHeight()
             this.icon:Show()
             this.icon:SetHeight(size)
             this.icon:SetWidth(size)
             this.icon.texture:SetTexture(texture)
-            this.bar:SetPoint("TOPLEFT", this.icon, "TOPRIGHT", this.spacing, 0)
+
+            local barAnchor = this.vertical and "BOTTOMLEFT" or "TOPLEFT"
+            local iconAnchor = this.vertical and "TOPLEFT" or "TOPRIGHT"
+            local xSpacing = this.vertical and 0 or this.spacing
+            local ySpacing = this.vertical and this.spacing or 0
+            if this.vertical then
+              this.icon:SetPoint(iconAnchor, this.bar, barAnchor, xSpacing, ySpacing)
+            else
+              this.bar:SetPoint(barAnchor, this.icon, iconAnchor, xSpacing, ySpacing)
+            end
           else
             this.bar:SetPoint("TOPLEFT", this, 0, 0)
             this.icon:Hide()
@@ -132,8 +141,13 @@ pfUI:RegisterModule("castbar", "vanilla:tbc", function ()
 
           if this.showlag then
             local _, _, lag = GetNetStats()
-            local width = this:GetWidth() / (duration/1000) * (lag/1000)
-            this.bar.lag:SetWidth(math.min(this:GetWidth(), width))
+            local thisSize = this.vertical and this:GetHeight() or this:GetWidth()
+            local size = thisSize / (duration/1000) * (lag/1000)
+            if this.vertical then
+              this.bar.lag:SetHeight(math.min(thisSize, size))
+            else
+              this.bar.lag:SetWidth(math.min(thisSize, size))
+            end
           else
             this.bar.lag:Hide()
           end
@@ -212,6 +226,14 @@ pfUI:RegisterModule("castbar", "vanilla:tbc", function ()
     pfUI.castbar.player.showlag = C.castbar.player.showlag == "1" and true or nil
     pfUI.castbar.player.showrank = C.castbar.player.showrank == "1" and true or nil
     pfUI.castbar.player.spacing = default_border * 2 + tonumber(C.unitframes.player.pspace) * GetPerfectPixel()
+    pfUI.castbar.player.vertical = C.castbar.player.vertical == "1" and true or nil
+
+    if pfUI.castbar.player.vertical then
+      pfUI.castbar.player.bar:SetOrientation("VERTICAL")
+      pfUI.castbar.player.bar.lag:ClearAllPoints()
+      pfUI.castbar.player.bar.lag:SetPoint("TOPLEFT", pfUI.castbar.player.bar, "TOPLEFT", 0, 0)
+      pfUI.castbar.player.bar.lag:SetPoint("TOPRIGHT", pfUI.castbar.player.bar, "TOPRIGHT", 0, 0)
+    end
 
     if pfUI.uf.player then
       local width = C.castbar.player.width ~= "-1" and C.castbar.player.width or pfUI.uf.player:GetWidth()
@@ -239,6 +261,14 @@ pfUI:RegisterModule("castbar", "vanilla:tbc", function ()
     pfUI.castbar.target.showlag = C.castbar.target.showlag == "1" and true or nil
     pfUI.castbar.target.showrank = C.castbar.target.showrank == "1" and true or nil
     pfUI.castbar.target.spacing = default_border * 2 + tonumber(C.unitframes.target.pspace) * GetPerfectPixel()
+    pfUI.castbar.target.vertical = C.castbar.target.vertical == "1" and true or nil
+
+    if pfUI.castbar.target.vertical then
+      pfUI.castbar.target.bar:SetOrientation("VERTICAL")
+      pfUI.castbar.target.bar.lag:ClearAllPoints()
+      pfUI.castbar.target.bar.lag:SetPoint("TOPLEFT", pfUI.castbar.target.bar, "TOPLEFT", 0, 0)
+      pfUI.castbar.target.bar.lag:SetPoint("TOPRIGHT", pfUI.castbar.target.bar, "TOPRIGHT", 0, 0)
+    end
 
     if pfUI.uf.target then
       local width = C.castbar.target.width ~= "-1" and C.castbar.target.width or pfUI.uf.target:GetWidth()
@@ -266,6 +296,14 @@ pfUI:RegisterModule("castbar", "vanilla:tbc", function ()
     pfUI.castbar.focus.showlag = C.castbar.focus.showlag == "1" and true or nil
     pfUI.castbar.focus.showrank = C.castbar.focus.showrank == "1" and true or nil
     pfUI.castbar.focus.spacing = default_border * 2 + tonumber(C.unitframes.focus.pspace) * GetPerfectPixel()
+    pfUI.castbar.focus.vertical = C.castbar.focus.vertical == "1" and true or nil
+
+    if pfUI.castbar.focus.vertical then
+      pfUI.castbar.focus.bar:SetOrientation("VERTICAL")
+      pfUI.castbar.focus.bar.lag:ClearAllPoints()
+      pfUI.castbar.focus.bar.lag:SetPoint("TOPLEFT", pfUI.castbar.focus.bar, "TOPLEFT", 0, 0)
+      pfUI.castbar.focus.bar.lag:SetPoint("TOPRIGHT", pfUI.castbar.focus.bar, "TOPRIGHT", 0, 0)
+    end
 
     -- reset unitstr for vanilla focus frame emulation
     if pfUI.client <= 11200 then
@@ -279,6 +317,7 @@ pfUI:RegisterModule("castbar", "vanilla:tbc", function ()
     if C.castbar.focus.height ~= "-1" then
       pfUI.castbar.focus:SetHeight(C.castbar.focus.height)
     end
+
 
     -- make sure the castbar is set to the same name as the focus frame is
     HookScript(pfUI.castbar.focus, "OnUpdate", function()
