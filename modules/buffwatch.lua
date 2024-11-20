@@ -281,7 +281,9 @@ pfUI:RegisterModule("buffwatch", "vanilla:tbc", function ()
         -- set name
         if frame.bars[bar].cacheName ~= data[3] then
           frame.bars[bar].cacheName = data[3]
-          frame.bars[bar].text:SetText(data[3])
+          if frame.config.shownames == "1" then
+            frame.bars[bar].text:SetText(data[3])
+          end
 
           -- calculate dynamic auto color
           local r, g, b
